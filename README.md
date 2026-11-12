@@ -14,6 +14,10 @@
 🔗 **[Запустить Live Demo](https://твой-ник.github.io/имя-репозитория/)** *(замени ссылку после публикации)*
 
 ---
+<img width="997" height="1956" alt="image" src="https://github.com/user-attachments/assets/bac9f9bb-a35e-459d-a8c3-61d0af375ad6" />
+<img width="873" height="2061" alt="image" src="https://github.com/user-attachments/assets/c7c43be3-d23f-4dda-bea6-87e9cb76cd27" />
+
+
 
 ## ⚡ Ключевые особенности
 - **Стратегия Fade:** Вход в сделку только после отката (exhaustion) от локального экстремума (pump/dump > 1.2%).
