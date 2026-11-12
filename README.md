@@ -11,7 +11,7 @@
 
 ## 📊 Интерактивная Демо-версия
 Попробуйте симулятор работы бота прямо в браузере (без установки):  
-🔗 **[Запустить Live Demo](https://твой-ник.github.io/имя-репозитория/)** *(замени ссылку после публикации)*
+🔗 **[Запустить Live Demo](https://h1opok.github.io/tokyo-fade-sniper/)** 
 
 ---
 <img width="997" height="1956" alt="image" src="https://github.com/user-attachments/assets/bac9f9bb-a35e-459d-a8c3-61d0af375ad6" />
