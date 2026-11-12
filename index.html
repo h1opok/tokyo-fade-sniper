@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Tokyo Fade Sniper - Алгоритмический трейдинг-бот для Binance Futures с положительным мат. ожиданием.">
+<title>Tokyo Fade Sniper — Algorithmic Trading Demo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'SF Pro Display',sans-serif;background:#0a0e1a;color:#f3f4f6;padding-bottom:env(safe-area-inset-bottom);background-image:radial-gradient(circle at 15% 5%,rgba(99,102,241,.14) 0,transparent 55%),radial-gradient(circle at 85% 90%,rgba(16,185,129,.1) 0,transparent 55%)}
+.wrap{max-width:520px;margin:0 auto;padding:10px}
+.hd{display:flex;align-items:center;gap:10px;padding:14px;background:rgba(17,24,39,.8);border:1px solid rgba(99,102,241,.25);border-radius:14px;margin-bottom:10px}
+.ic{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.hd h1{font-size:16px;background:linear-gradient(135deg,#fff,#a5b4fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hd p{font-size:10px;color:#9ca3af;margin-top:2px}
+.st{margin-left:auto;font-size:9px;font-weight:700;padding:6px 10px;border-radius:99px;background:rgba(107,114,128,.15);border:1px solid rgba(107,114,128,.3);color:#9ca3af;white-space:nowrap}
+.st.on{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4);color:#10b981}
+.st.on::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;margin-right:5px;animation:pl 1.5s infinite}
+@keyframes pl{50%{opacity:.4}}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.k{background:rgba(17,24,39,.8);border:1px solid rgba(99,102,241,.18);border-radius:12px;padding:10px 12px;position:relative;overflow:hidden}
+.k::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:#6366f1}
+.k.g::before{background:#10b981}.k.r::before{background:#ef4444}.k.y::before{background:#f59e0b}
+.kl{font-size:8px;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:3px}
+.kv{font-size:19px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.kv.g{color:#10b981}.kv.r{color:#ef4444}
+.ks{font-size:9px;color:#9ca3af;margin-top:2px}
+.btns{display:flex;gap:6px;margin-bottom:10px}
+.b{flex:1;padding:11px 6px;border:1px solid rgba(99,102,241,.25);background:rgba(17,24,39,.8);color:#f3f4f6;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.b:active{transform:scale(.95)}
+.b.p{background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;box-shadow:0 4px 16px rgba(99,102,241,.4)}
+.b.d{color:#ef4444;border-color:rgba(239,68,68,.3)}
+.b:disabled{opacity:.35}
+.card{background:rgba(17,24,39,.8);border:1px solid rgba(99,102,241,.18);border-radius:14px;padding:12px;margin-bottom:10px}
+.ct{font-size:13px;font-weight:700;margin-bottom:2px}
+.cs{font-size:9px;color:#6b7280;margin-bottom:10px}
+canvas{width:100%;display:block;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th{text-align:left;color:#6b7280;font-size:8px;text-transform:uppercase;letter-spacing:.4px;padding:6px 4px;border-bottom:1px solid rgba(99,102,241,.15)}
+td{padding:7px 4px;border-bottom:1px solid rgba(99,102,241,.07);white-space:nowrap}
+.sb{padding:2px 7px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:5px;font-weight:700;font-size:9px}
+.L{color:#10b981;font-weight:700}.S{color:#ef4444;font-weight:700}
+.pg{color:#10b981;font-weight:800}.pn{color:#ef4444;font-weight:800}
+.log{background:rgba(0,0,0,.35);border:1px solid rgba(99,102,241,.15);border-radius:10px;padding:8px;max-height:150px;overflow-y:auto;font-family:'SF Mono',Menlo,monospace;font-size:9px;line-height:1.7}
+.le{padding:2px 0;border-bottom:1px solid rgba(99,102,241,.05)}
+.lt{color:#6b7280}.li{color:#60a5fa}.lok{color:#10b981;font-weight:700}.lwr{color:#f59e0b}.ler{color:#ef4444;font-weight:700}
+.fc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.f{text-align:center;background:rgba(17,24,39,.8);border:1px solid rgba(99,102,241,.18);border-radius:10px;padding:8px 4px}
+.f .fl{font-size:8px;color:#6b7280;text-transform:uppercase;font-weight:700}
+.f .fv{font-size:13px;font-weight:800;margin-top:2px;color:#10b981}
+.f .fv.r{color:#ef4444}
+.bd{display:flex;gap:6px;margin-bottom:10px}
+.bx{flex:1;text-align:center;background:rgba(17,24,39,.8);border:1px solid rgba(99,102,241,.18);border-radius:10px;padding:8px 4px}
+.bx .bl{font-size:8px;color:#6b7280;text-transform:uppercase;font-weight:700}
+.bx .bv{font-size:15px;font-weight:800;margin-top:2px}
+.bx.tp .bv{color:#10b981}.bx.tr .bv{color:#60a5fa}.bx.sl .bv{color:#ef4444}.bx.te .bv{color:#f59e0b}
+.reinv{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-around;text-align:center}
+.reinv .ri{flex:1}
+.reinv .rl{font-size:8px;color:#6b7280;text-transform:uppercase;font-weight:700}
+.reinv .rv{font-size:14px;font-weight:800;color:#10b981;margin-top:2px}
+.cta-box{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.2));border:1px solid rgba(99,102,241,.4);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px}
+.cta-box h3{font-size:15px;margin-bottom:6px;color:#fff}
+.cta-box p{font-size:11px;color:#d1d5db;margin-bottom:12px;line-height:1.4}
+.cta-btn{display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,.4);transition:transform .2s}
+.cta-btn:active{transform:scale(.96)}
+.ft{text-align:center;font-size:9px;color:#6b7280;padding:14px;line-height:1.6}
+.ft b{color:#9ca3af}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hd">
+  <div class="ic">🎯</div>
+  <div><h1>Tokyo Fade Sniper</h1><p>Fade Strategy · 20 активов · риск 3% · 10x</p></div>
+  <div class="st" id="st">STANDBY</div>
+</div>
+<div class="kg">
+  <div class="k g" id="cPnl"><div class="kl">Total PnL</div><div class="kv g" id="kPnl">$0.00</div><div class="ks" id="kRoi">+0.0% ROI</div></div>
+  <div class="k"><div class="kl">Equity</div><div class="kv" id="kEq">$15.00</div><div class="ks" id="kDay">Day 1 · 00h</div></div>
+  <div class="k"><div class="kl">Win Rate</div><div class="kv" id="kWr">—</div><div class="ks" id="kWL">0W / 0L</div></div>
+  <div class="k"><div class="kl">Avg R-Mult</div><div class="kv" id="kR">—</div><div class="ks">target &gt; 0.30R</div></div>
+  <div class="k"><div class="kl">Сделок</div><div class="kv" id="kTr">0</div><div class="ks" id="kTpd">0 / день</div></div>
+  <div class="k r"><div class="kl">Max Drawdown</div><div class="kv r" id="kDd">0.0%</div><div class="ks">лимит дня −$1.35</div></div>
+  <div class="k y"><div class="kl">Daily PnL</div><div class="kv" id="kDp">$0.00</div><div class="ks" id="kDs">активна</div></div>
+  <div class="k"><div class="kl">Позиция</div><div class="kv" id="kPos" style="font-size:13px">нет</div><div class="ks" id="kPosU">cooldown ok</div></div>
+</div>
+<div class="reinv">
+  <div class="ri"><div class="rl">Риск/сделку</div><div class="rv" id="rRisk">$0.45</div></div>
+  <div class="ri"><div class="rl">Размер поз.</div><div class="rv" id="rSize">$45</div></div>
+  <div class="ri"><div class="rl">Плечо</div><div class="rv">10x</div></div>
+  <div class="ri"><div class="rl">Рост</div><div class="rv" id="rGrowth">1.0x</div></div>
+</div>
+<div class="btns">
+  <button class="b p" id="bStart">▶ Старт</button>
+  <button class="b" id="bPause" disabled>⏸ Пауза</button>
+  <button class="b" id="bSpd">⚡ 1x</button>
+  <button class="b d" id="bReset">⟲</button>
+</div>
+<div class="bd">
+  <div class="bx tp"><div class="bl">TP</div><div class="bv" id="bTp">0</div></div>
+  <div class="bx tr"><div class="bl">TRAIL</div><div class="bv" id="bTr">0</div></div>
+  <div class="bx sl"><div class="bl">SL</div><div class="bv" id="bSl">0</div></div>
+  <div class="bx te"><div class="bl">TIME</div><div class="bv" id="bTe">0</div></div>
+</div>
+<div class="card"><div class="ct">Equity Curve</div><div class="cs">Баланс · пунктир = старт $15</div><canvas id="chEq" height="200"></canvas></div>
+<div class="card"><div class="ct">Daily PnL</div><div class="cs">Прибыль по торговым дням</div><canvas id="chDay" height="140"></canvas></div>
+<div class="fc"><div class="f"><div class="fl">День</div><div class="fv" id="fD">—</div></div><div class="f"><div class="fl">Неделя</div><div class="fv" id="fW">—</div></div><div class="f"><div class="fl">Месяц</div><div class="fv" id="fM">—</div></div></div>
+<div class="card"><div class="ct">Последние сделки</div><div class="cs">Журнал закрытых позиций</div>
+<table><thead><tr><th>Время</th><th>Актив</th><th>Стор</th><th>Вход</th><th>Вых</th><th>PnL</th><th>R</th><th>Причина</th></tr></thead>
+<tbody id="tb"><tr><td colspan="8" style="text-align:center;color:#6b7280;padding:20px">Нажми «Старт»</td></tr></tbody></table></div>
+<div class="card"><div class="ct">Системный лог</div><div class="cs">События бота</div><div class="log" id="lg"></div></div>
+
+<div class="cta-box">
+  <h3>💼 Хотите такой же бот для себя?</h3>
+  <p>Полный исходный код Python (asyncio, websockets, Binance API), пошаговая инструкция по установке на VDS и личная поддержка при развертывании.</p>
+  <a href="https://t.me/HlopokSU" target="_blank" class="cta-btn">Купить исходный код за $5000 →</a>
+</div>
+
+<div class="ft"><b>Tokyo Fade Sniper v2.4</b> · Mean-Reversion: PUMP → EXHAUSTION → REVERSION<br>Backtest: Avg R 0.85 · WR 68% · Maker 0.02% (BNB)<br>Contact: <a href="https://t.me/HlopokSU" style="color:#6366f1;text-decoration:none">@HlopokSU</a></div>
+</div>
+
+<script>
+"use strict";
+var CFG={eq0:15,risk:0.03,thr:1.2,win:15,sl:1.0,tp:2.5,tAct:0.6,tDist:0.4,feeM:0.0002,feeT:0.0004,cool:3,maxDur:90,dailyLim:1.35};
+var SYM=[["SEI",0.52],["SOL",185.4],["WIF",2.15],["BNB",612.3],["BTC",94250],["DOT",6.82],["RUNE",5.24],["NOT",0.0082],["DOGE",0.38],["POPCAT",7.45],["LDO",1.85],["LINK",18.42],["NEAR",5.68],["OP",0.92],["RENDER",7.85],["INJ",24.5],["FET",1.42],["ONDO",1.35],["SUI",3.82],["AAVE",312.5]];
+var S=null,iv=null,SPD=[1,5,20],si=0;
+
+function fresh(){var m={};SYM.forEach(function(x){m[x[0]]={p:x[1],anchor:x[1],ph:"N",phT:0,dir:0,mag:0,win:false,entered:false};});
+return{eq:CFG.eq0,peak:CFG.eq0,dd:0,tr:[],hist:[CFG.eq0],tick:0,pos:null,cool:{},daily:{},day:1,dayPnl:0,paused:false,run:false,m:m,cnt:{tp:0,tr:0,sl:0,te:0}};}
+
+function dayStop(){return S.dayPnl<=-CFG.dailyLim;}
+
+function evolve(st){
+  if(st.ph==="N"){
+    st.p*=1+(Math.random()-0.5)*0.001;
+    if(Math.random()<0.0018){
+      st.dir=Math.random()<0.5?1:-1;
+      st.mag=(1.3+Math.random()*1.8)/100;
+      st.win=Math.random()<0.68;
+      st.anchor=st.p; st.ph="PUMP"; st.phT=0; st.entered=false;
+    }
+    return;
+  }
+  if(st.ph==="PUMP"){
+    st.p*=1+st.dir*(st.mag/3)*(0.8+Math.random()*0.4);
+    st.phT++;
+    if(st.phT>=3){st.ph="EXHAUST";st.phT=0;}
+    return;
+  }
+  if(st.ph==="EXHAUST"){
+    st.p*=1-st.dir*(0.01/4);
+    st.phT++;
+    if(st.phT>=4){st.ph="REV";st.phT=0;}
+    return;
+  }
+  if(st.ph==="REV"){
+    if(st.win){
+      st.p*=1-st.dir*(st.mag*1.3/25);
+      st.phT++;
+      if(st.phT>=25){st.ph="N";}
+    } else {
+      st.p*=1+st.dir*(st.mag*0.95/15);
+      st.phT++;
+      if(st.phT>=15){st.ph="N";}
+    }
+    st.p*=1+(Math.random()-0.5)*0.0008;
+    return;
+  }
+}
+
+function step(){
+  if(!S.run||S.paused)return;
+  S.tick++;
+  SYM.forEach(function(x){evolve(S.m[x[0]]);});
+
+  if(S.pos){var p=S.pos,st=S.m[p.sym];
+    var hi=st.p*(1+Math.random()*0.0006),lo=st.p*(1-Math.random()*0.0006);
+    if(p.side==="BUY")p.best=Math.max(p.best,st.p);else p.best=Math.min(p.best,st.p);
+    var fav=p.side==="BUY"?(p.best-p.entry)/p.entry*100:(p.entry-p.best)/p.entry*100;
+    if(fav>=CFG.tAct){
+      var ns=p.side==="BUY"?p.best*(1-CFG.tDist/100):p.best*(1+CFG.tDist/100);
+      if(p.side==="BUY"&&ns>p.sl){p.sl=ns;if(!p.trailLogged){log("📈 TRAIL "+p.sym+" SL→"+fmt(p.sl),"lok");p.trailLogged=true;}}
+      if(p.side==="SELL"&&ns<p.sl){p.sl=ns;if(!p.trailLogged){log("📈 TRAIL "+p.sym+" SL→"+fmt(p.sl),"lok");p.trailLogged=true;}}
+    }
+    var ex=null,rsn=null;
+    if(p.side==="BUY"){if(lo<=p.sl){ex=p.sl;rsn=p.sl>p.entry?"TRAIL_SL":"SL_HIT";}else if(hi>=p.tp){ex=p.tp;rsn="TP_HIT";}}
+    else{if(hi>=p.sl){ex=p.sl;rsn=p.sl<p.entry?"TRAIL_SL":"SL_HIT";}else if(lo<=p.tp){ex=p.tp;rsn="TP_HIT";}}
+    if(!ex&&S.tick-p.opened>CFG.maxDur){ex=st.p;rsn="TIME_EXIT";}
+    if(ex)closeTrade(ex,rsn);
+  }
+
+  if(!S.pos&&!dayStop()){
+    for(var i=0;i<SYM.length;i++){
+      if(S.pos)break;
+      var s=SYM[i][0],st=S.m[s];
+      if(st.ph==="EXHAUST"&&st.phT>=2&&!st.entered){
+        if(!(S.cool[s]&&S.tick-S.cool[s]<CFG.cool)){
+          var side=st.dir>0?"SELL":"BUY";
+          openTrade(s,side,st.dir*st.mag*100);
+          st.entered=true;
+        }
+      }
+    }
+  }
+
+  if(S.tick%1440===0){S.day++;S.dayPnl=0;log("New UTC day "+S.day,"li");}
+  if(S.tick%2===0)render();
+}
+
+function openTrade(sym,side,mv){var st=S.m[sym],entry=st.p;
+  var sl=side==="SELL"?entry*(1+CFG.sl/100):entry*(1-CFG.sl/100);
+  var tp=side==="SELL"?entry*(1-CFG.tp/100):entry*(1+CFG.tp/100);
+  var risk=S.eq*CFG.risk,qty=risk/Math.abs(entry-sl);
+  var notional=qty*entry;
+  S.pos={sym:sym,side:side,entry:entry,sl:sl,tp:tp,qty:qty,notional:notional,risk:risk,best:entry,opened:S.tick,trailLogged:false};
+  S.cool[sym]=S.tick;
+  log((side==="SELL"?"SELL":"BUY")+" "+sym+" @"+fmt(entry)+" · Risk $"+risk.toFixed(2)+" · Size $"+notional.toFixed(0)+" · GTX","li");}
+
+function closeTrade(ex,rsn){var p=S.pos;
+  var gross=p.side==="SELL"?(p.entry-ex)*p.qty:(ex-p.entry)*p.qty;
+  var fees=p.entry*p.qty*CFG.feeM+ex*p.qty*CFG.feeT;
+  var net=gross-fees,rm=net/p.risk;
+  S.eq+=net;S.dayPnl+=net;S.daily[S.day]=(S.daily[S.day]||0)+net;
+  S.hist.push(S.eq);if(S.hist.length>400)S.hist.shift();
+  if(S.eq>S.peak)S.peak=S.eq;
+  var dd=(S.peak-S.eq)/S.peak*100;if(dd>S.dd)S.dd=dd;
+  if(rsn==="TP_HIT")S.cnt.tp++;else if(rsn==="TRAIL_SL")S.cnt.tr++;else if(rsn==="SL_HIT")S.cnt.sl++;else S.cnt.te++;
+  S.tr.unshift({t:S.tick,sym:p.sym,side:p.side,en:p.entry,ex:ex,net:net,r:rm,rsn:rsn,risk:p.risk,size:p.notional});
+  if(S.tr.length>60)S.tr.pop();
+  log((net>=0?"✔":"✖")+" CLOSE "+p.sym+" "+rsn+" · "+(net>=0?"+":"")+fmt(net)+"$ · "+(rm>=0?"+":"")+rm.toFixed(2)+"R",net>=0?"lok":"ler");
+  if(dayStop())log("⛔ DAILY LIMIT −$1.35 · стоп до нового дня","lwr");
+  S.pos=null;}
+
+function fmt(v){return v>=1000?v.toFixed(1):v>=1?v.toFixed(3):v.toFixed(5);}
+function $(id){return document.getElementById(id);}
+function log(m,c){var l=$("lg"),d=document.createElement("div");d.className="le";
+  var mm=S.tick%1440,hh=Math.floor(mm/60);mm%=60;
+  d.innerHTML='<span class="lt">['+(hh<10?"0":"")+hh+":"+(mm<10?"0":"")+mm+']</span> <span class="'+c+'">'+m+'</span>';
+  l.insertBefore(d,l.firstChild);while(l.children.length>40)l.removeChild(l.lastChild);}
+
+function render(){var pnl=S.eq-CFG.eq0,roi=pnl/CFG.eq0*100;
+  $("kPnl").textContent=(pnl>=0?"+":"−")+"$"+Math.abs(pnl).toFixed(2);
+  $("kPnl").className="kv "+(pnl>=0?"g":"r");$("cPnl").className="k "+(pnl>=0?"g":"r");
+  $("kRoi").textContent=(roi>=0?"+":"")+roi.toFixed(1)+"% ROI";
+  $("kEq").textContent="$"+S.eq.toFixed(2);
+  var mm=S.tick%1440;$("kDay").textContent="Day "+S.day+" · "+Math.floor(mm/60)+"h";
+  var w=S.tr.filter(function(t){return t.net>0;}).length,l=S.tr.length-w;
+  $("kWr").textContent=S.tr.length?(w/S.tr.length*100).toFixed(1)+"%":"—";
+  $("kWL").textContent=w+"W / "+l+"L";
+  $("kR").textContent=S.tr.length?(S.tr.reduce(function(a,t){return a+t.r;},0)/S.tr.length).toFixed(2)+"R":"—";
+  $("kTr").textContent=S.tr.length;
+  var days=Math.max(0.05,S.tick/1440);
+  $("kTpd").textContent=(S.tr.length/days).toFixed(1)+" / день";
+  $("kDd").textContent=S.dd.toFixed(1)+"%";
+  $("kDp").textContent=(S.dayPnl>=0?"+":"−")+"$"+Math.abs(S.dayPnl).toFixed(2);
+  $("kDp").className="kv "+(S.dayPnl>=0?"g":"r");
+  $("kDs").textContent=dayStop()?"⛔ СТОП ДНЯ":"активна";
+  if(S.pos){var st=S.m[S.pos.sym],fav=S.pos.side==="BUY"?(st.p-S.pos.entry)/S.pos.entry*100:(S.pos.entry-st.p)/S.pos.entry*100;
+    $("kPos").textContent=S.pos.side+" "+S.pos.sym;$("kPosU").textContent=(fav>=0?"+":"")+fav.toFixed(2)+"% unreal · $"+S.pos.notional.toFixed(0);}
+  else{$("kPos").textContent="нет";$("kPosU").textContent=dayStop()?"стоп дня":"cooldown ok";}
+  $("bTp").textContent=S.cnt.tp;$("bTr").textContent=S.cnt.tr;$("bSl").textContent=S.cnt.sl;$("bTe").textContent=S.cnt.te;
+  var avgNet=S.tr.length?S.tr.reduce(function(a,t){return a+t.net;},0)/S.tr.length:0;
+  var dpd=(S.tr.length/days)*avgNet;
+  var fD=$("fD"),fW=$("fW"),fM=$("fM");
+  fD.textContent=dpd>0?"+$"+dpd.toFixed(2):dpd<0?"−$"+Math.abs(dpd).toFixed(2):"—";
+  fD.className="fv "+(dpd>=0?"":"r");
+  fW.textContent=dpd>0?"+$"+(dpd*7).toFixed(2):dpd<0?"−$"+Math.abs(dpd*7).toFixed(2):"—";
+  fW.className="fv "+(dpd>=0?"":"r");
+  fM.textContent=dpd>0?"+$"+(dpd*30).toFixed(2):dpd<0?"−$"+Math.abs(dpd*30).toFixed(2):"—";
+  fM.className="fv "+(dpd>=0?"":"r");
+  var curRisk=S.eq*CFG.risk,curSize=curRisk/0.01;
+  $("rRisk").textContent="$"+curRisk.toFixed(2);
+  $("rSize").textContent="$"+curSize.toFixed(0);
+  $("rGrowth").textContent=(S.eq/CFG.eq0).toFixed(2)+"x";
+  drawEq();drawDay();drawTable();}
+
+function drawEq(){var c=$("chEq"),dpr=window.devicePixelRatio||1;
+  c.width=c.clientWidth*dpr;c.height=200*dpr;var x=c.getContext("2d");x.scale(dpr,dpr);
+  var W=c.clientWidth,H=200;x.clearRect(0,0,W,H);var h=S.hist;if(h.length<2)return;
+  var mn=Math.min.apply(null,h),mx=Math.max.apply(null,h),pad=(mx-mn)*0.12||0.5;mn-=pad;mx+=pad;
+  var X=function(i){return 36+i/(h.length-1)*(W-44);},Y=function(v){return H-20-(v-mn)/(mx-mn)*(H-32);};
+  x.fillStyle="#6b7280";x.font="9px sans-serif";
+  for(var g=0;g<=3;g++){var v=mn+(mx-mn)*g/3;x.fillText("$"+v.toFixed(1),2,Y(v)+3);
+    x.strokeStyle="rgba(99,102,241,.06)";x.beginPath();x.moveTo(36,Y(v));x.lineTo(W-8,Y(v));x.stroke();}
+  x.strokeStyle="rgba(99,102,241,.3)";x.setLineDash([4,4]);x.beginPath();x.moveTo(36,Y(CFG.eq0));x.lineTo(W-8,Y(CFG.eq0));x.stroke();x.setLineDash([]);
+  var last=h[h.length-1],up=last>=CFG.eq0,col=up?"#10b981":"#ef4444";
+  var gr=x.createLinearGradient(0,0,0,H);gr.addColorStop(0,up?"rgba(16,185,129,.3)":"rgba(239,68,68,.3)");gr.addColorStop(1,"rgba(0,0,0,0)");
+  x.beginPath();x.moveTo(X(0),Y(h[0]));for(var i=1;i<h.length;i++)x.lineTo(X(i),Y(h[i]));
+  x.lineTo(X(h.length-1),H-20);x.lineTo(X(0),H-20);x.closePath();x.fillStyle=gr;x.fill();
+  x.beginPath();x.moveTo(X(0),Y(h[0]));for(i=1;i<h.length;i++)x.lineTo(X(i),Y(h[i]));
+  x.strokeStyle=col;x.lineWidth=2;x.stroke();}
+
+function drawDay(){var c=$("chDay"),dpr=window.devicePixelRatio||1;
+  c.width=c.clientWidth*dpr;c.height=140*dpr;var x=c.getContext("2d");x.scale(dpr,dpr);
+  var W=c.clientWidth,H=140;x.clearRect(0,0,W,H);
+  var ds=Object.keys(S.daily);if(!ds.length)return;
+  var mx=Math.max.apply(null,ds.map(function(d){return Math.abs(S.daily[d]);}))*1.25||1;
+  var zero=H/2;x.strokeStyle="rgba(107,114,128,.3)";x.beginPath();x.moveTo(0,zero);x.lineTo(W,zero);x.stroke();
+  var slot=(W-10)/ds.length,bw=Math.min(26,slot-4);
+  ds.forEach(function(d,i){var v=S.daily[d],bx=6+i*slot,bh=Math.abs(v)/mx*(H/2-14);
+    x.fillStyle=v>=0?"rgba(16,185,129,.75)":"rgba(239,68,68,.75)";
+    if(v>=0)x.fillRect(bx,zero-bh,bw,bh);else x.fillRect(bx,zero,bw,bh);
+    x.fillStyle="#6b7280";x.font="8px sans-serif";x.fillText("D"+d,bx,H-4);});}
+
+function drawTable(){var t=S.tr.slice(0,12);
+  if(!t.length){$("tb").innerHTML='<tr><td colspan="8" style="text-align:center;color:#6b7280;padding:20px">Нажми «Старт»</td></tr>';return;}
+  $("tb").innerHTML=t.map(function(r){var mm=r.t%1440,hh=Math.floor(mm/60);mm%=60;
+  return '<tr><td style="color:#6b7280">'+(hh<10?"0":"")+hh+":"+(mm<10?"0":"")+mm+'</td>'+
+  '<td><span class="sb">'+r.sym+'</span></td><td class="'+(r.side==="BUY"?"L":"S")+'">'+(r.side==="BUY"?"LONG":"SHORT")+'</td>'+
+  '<td>'+fmt(r.en)+'</td><td>'+fmt(r.ex)+'</td><td class="'+(r.net>=0?"pg":"pn")+'">'+(r.net>=0?"+":"")+r.net.toFixed(2)+'</td>'+
+  '<td class="'+(r.r>=0?"pg":"pn")+'">'+(r.r>=0?"+":"")+r.r.toFixed(2)+'R</td><td style="color:#9ca3af">'+r.rsn+'</td></tr>';}).join("");}
+
+function startIv(){if(iv)clearInterval(iv);iv=setInterval(step,Math.max(8,200/SPD[si]));}
+$("bStart").onclick=function(){if(S&&S.run)return;S=fresh();S.run=true;
+  $("bStart").disabled=true;$("bPause").disabled=false;
+  $("st").textContent="LIVE SIM";$("st").className="st on";
+  log("▶ Bot started · scanning 20 assets","lok");startIv();render();};
+$("bPause").onclick=function(){if(!S||!S.run)return;S.paused=!S.paused;
+  $("bPause").textContent=S.paused?"▶":"⏸ Пауза";$("st").textContent=S.paused?"PAUSED":"LIVE SIM";};
+$("bSpd").onclick=function(){si=(si+1)%SPD.length;$("bSpd").textContent="⚡ "+SPD[si]+"x";if(S&&S.run)startIv();};
+$("bReset").onclick=function(){if(iv)clearInterval(iv);S=fresh();
+  $("bStart").disabled=false;$("bPause").disabled=true;$("bPause").textContent="⏸ Пауза";
+  $("st").textContent="STANDBY";$("st").className="st";$("lg").innerHTML="";
+  log("System reset. Ready.","li");render();};
+S=fresh();log("Система готова · Whitelist 20 · SL 1.0% TP 2.5% Trail 0.6/0.4 · GTX Maker 0.02%","li");render();
+</script>
+</body>
+</html>
